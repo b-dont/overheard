@@ -7,7 +7,23 @@ const subscribe = async() => {
     accessToken: process.env.TOKEN,
   });
 
-  for await (const event of masto.user.notification.subscribe())
-
   console.log("subscribed to notifications")
+
+  for await (const event of masto.user.notification.subscribe()) {
+    switch (event.event) {
+      case "notification": {
+        console.log("new notification", event.payload.status.inReplyToId);
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+};
+
+try {
+  await subscribe();
+} catch (error) {
+  console.error(error);
 }
