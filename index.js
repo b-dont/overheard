@@ -1,13 +1,13 @@
-import { createRestAPIClient } from "masto";
+import { createStreamingAPIClient } from 'masto'
+import 'dotenv/config'
 
-const masto = createRestAPIClient({
-  url: process.env.URL,
-  accessToken: process.env.TOKEN,
-});
+const subscribe = async() => {
+  const masto = createStreamingAPIClient({
+    streamingApiUrl: process.env.URL,
+    accessToken: process.env.TOKEN,
+  });
 
-const status = await masto.v1.statuses.create({
-  status: "Automated post from mastojs. Yes, I'm learning Javascript..",
-  visibility: "public",
-});
+  for await (const event of masto.user.notification.subscribe())
 
-console.log(status.url);
+  console.log("subscribed to notifications")
+}
