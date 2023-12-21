@@ -12,15 +12,17 @@ const subscribe = async() => {
     accessToken: process.env.TOKEN,
   });
 
-  console.log("subscribed to notifications")
+  console.log("Subscribed to notifications, listening for mentions.");
 
   for await (const event of mastoStream.user.notification.subscribe()) {
     switch (event.event) {
 
       case "notification": {
-        if (event.payload.status.inReplyToId)
-          parentId = mastoConnection.v1.statuses.$select(event.payload.status.inReplyToId);
-        break;
+        if (event.payload.status.inReplyToId !== 'undefined') {
+          mastoConnection.v1.statuses.$select(event.payload.status.inReplyToId).reblog();
+          console.log("Found mention ", event.payload.status.id, ", boosting status ", event.payload.status.inReplyToId)
+          break;
+        } 
       }
 
       default: {
