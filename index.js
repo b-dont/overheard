@@ -1,20 +1,28 @@
-import { createStreamingAPIClient } from 'masto'
+import { createRestAPIClient, createStreamingAPIClient } from 'masto'
 import 'dotenv/config'
 
 const subscribe = async() => {
-  const masto = createStreamingAPIClient({
-    streamingApiUrl: process.env.URL,
+  const mastoConnection = createRestAPIClient({
+    url: process.env.URL,
+    accessToken: process.env.TOKEN,
+  })
+
+  const mastoStream = createStreamingAPIClient({
+    streamingApiUrl: process.env.STREAM_URL,
     accessToken: process.env.TOKEN,
   });
 
   console.log("subscribed to notifications")
 
-  for await (const event of masto.user.notification.subscribe()) {
+  for await (const event of mastoStream.user.notification.subscribe()) {
     switch (event.event) {
+
       case "notification": {
-        console.log("new notification", event.payload.status.inReplyToId);
+        if (event.payload.status.inReplyToId)
+          parentId = mastoConnection.v1.statuses.$select(event.payload.status.inReplyToId);
         break;
       }
+
       default: {
         break;
       }
