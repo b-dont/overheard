@@ -1,0 +1,11 @@
+services:
+  server:
+    build:
+      context: .
+    environment:
+      NODE_ENV: production
+      URL: ${URL}
+      STREAM_URL: ${STREAM_URL}
+      TOKEN: ${TOKEN}
+    ports:
+      - 3001:3001
