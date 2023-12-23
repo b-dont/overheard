@@ -1,5 +1,6 @@
 import { createRestAPIClient, createStreamingAPIClient } from 'masto'
 import 'dotenv/config'
+import 'mention'
 
 const subscribe = async() => {
   const mastoConnection = createRestAPIClient({
@@ -19,10 +20,14 @@ const subscribe = async() => {
 
       case "notification": {
         if (event.payload.status.inReplyToId !== 'undefined') {
-          mastoConnection.v1.statuses.$select(event.payload.status.inReplyToId).reblog();
-          console.log("Found mention ", event.payload.status.id, ", boosting status ", event.payload.status.inReplyToId)
-          break;
-        } 
+          if (!checkParent(event)) {
+            reblogParent(event.payload.status.inReplyToId, mastoConnection);
+            console.log("Found mention:", event.payload.status.id, ", boosting status ", event.payload.status.inReplyToId)
+            break;
+          }
+        } else {
+            break
+        }
       }
 
       default: {
@@ -36,4 +41,5 @@ try {
   await subscribe();
 } catch (error) {
   console.error(error);
+  await subscribe();
 }
