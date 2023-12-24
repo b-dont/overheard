@@ -1,28 +1,18 @@
-import { createRestAPIClient, createStreamingAPIClient } from 'masto'
 import 'dotenv/config'
-import 'mention'
+import { MastoConnections } from 'mastoConnector'
 
 const subscribe = async() => {
-  const mastoConnection = createRestAPIClient({
-    url: process.env.URL,
-    accessToken: process.env.TOKEN,
-  })
-
-  const mastoStream = createStreamingAPIClient({
-    streamingApiUrl: process.env.STREAM_URL,
-    accessToken: process.env.TOKEN,
-  });
-
-  console.log("Subscribed to notifications, listening for mentions.");
+  const connection = new MastoConnections(process.env.URL, process.env.STREAM_URL, process.env.TOKEN)
+  const mastoConnection = connection.restConnection();
+  const mastoStream = connection.streamConnection();
 
   for await (const event of mastoStream.user.notification.subscribe()) {
     switch (event.event) {
 
       case "notification": {
         if (event.payload.status.inReplyToId !== 'undefined') {
-          if (!checkParent(event)) {
+          if (!checkNobot(event)) {
             reblogParent(event.payload.status.inReplyToId, mastoConnection);
-            console.log("Found mention:", event.payload.status.id, ", boosting status ", event.payload.status.inReplyToId)
             break;
           }
         } else {

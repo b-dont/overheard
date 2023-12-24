@@ -1,5 +1,4 @@
-
-const checkParent = async(event) => {
+const checkNobot = async(event) => {
   const re = /\#nobot/;
   return re.test(event.payload.account.note);
 }
