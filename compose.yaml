@@ -3,9 +3,12 @@ services:
     build:
       context: .
     environment:
-      NODE_ENV: production
+      NODE_ENV: dev
       URL: ${URL}
       STREAM_URL: ${STREAM_URL}
       TOKEN: ${TOKEN}
     ports:
       - 3001:3001
+    volumes:
+      - ${PWD}/package.json
+      - ${PWD}/package-lock.json

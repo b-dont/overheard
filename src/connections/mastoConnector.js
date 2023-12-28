@@ -1,6 +1,6 @@
 import { createRestAPIClient, createStreamingAPIClient } from "masto";
 
-class MastoConnections {
+export default class MastoConnections {
   constructor(url, stream, token) {
     this.url = url;
     this.stream = stream;

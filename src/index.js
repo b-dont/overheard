@@ -1,8 +1,8 @@
 import 'dotenv/config'
-import { MastoConnections } from 'mastoConnector'
+import MastoConnections from './connections/mastoConnector.js';
 
 const subscribe = async() => {
-  const connection = new MastoConnections(process.env.URL, process.env.STREAM_URL, process.env.TOKEN)
+  const connection = new MastoConnections(process.en.URL, process.env.STREAM_URL, process.env.TOKEN)
   const mastoConnection = connection.restConnection();
   const mastoStream = connection.streamConnection();
 
