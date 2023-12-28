@@ -2,20 +2,23 @@ import 'dotenv/config'
 import MastoConnections from './connections/mastoConnector.js';
 
 const subscribe = async() => {
-  const connection = new MastoConnections(process.en.URL, process.env.STREAM_URL, process.env.TOKEN)
+  const connection = new MastoConnections(process.env.URL, process.env.STREAM_URL, process.env.TOKEN)
   const mastoConnection = connection.restConnection();
   const mastoStream = connection.streamConnection();
+  console.log("Listening for mentions..");
 
   for await (const event of mastoStream.user.notification.subscribe()) {
     switch (event.event) {
 
       case "notification": {
         if (event.payload.status.inReplyToId !== 'undefined') {
+          console.log("Found mention", event.payload.status.id);
           if (!checkNobot(event)) {
             reblogParent(event.payload.status.inReplyToId, mastoConnection);
             break;
           }
         } else {
+            console.log("User has #nobot in bio, abstaining from reblog.");
             break
         }
       }

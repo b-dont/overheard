@@ -7,14 +7,16 @@ export default class MastoConnections {
     this.token = token;
   }
 
-  get restConnection() {
+  restConnection() {
+    console.log("Connecting to REST API")
     return createRestAPIClient({
       url: this.url,
       accessToken: this.token,
     });
   }
 
-  get streamConnection() {
+  streamConnection() {
+    console.log("Connecting to notification stream")
     return createStreamingAPIClient({
       streamingApiUrl: this.stream,
       accessToken: this.token,
