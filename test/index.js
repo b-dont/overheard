@@ -1,9 +1,10 @@
 import 'dotenv/config'
 import MastoConnections from '../src/connections/mastoConnector.js';
 
-const accountId = "110345242357005448"
+const connector = new MastoConnections(process.env.URL, process.env.STREAM_URL, process.env.TOKEN);
+const connection = connector.restConnection();
 
-const checkNobot = async(accountBio) => {
+function checkNobot(accountBio) {
   const re = new RegExp("\#nobot/");
   var hasNobot = re.test(accountBio);
   if (hasNobot)
@@ -12,19 +13,15 @@ const checkNobot = async(accountBio) => {
     console.log("#nobot not found")
 };
 
-const getBio = async(userId) => {
-  const connection = new MastoConnections(process.env.URL, process.env.STREAM_URL, process.env.TOKEN);
-  const mastoConnection = connection.restConnection();
-  const user = mastoConnection.v1.accounts.$select(userId).note;
-  const bio = user.note;
-
-//  checkNobot(bio);
-  console.log(bio)
-
+const getBio = async(connection) => {
+  const user = await connection.v1.accounts.lookup({
+    acct: '@btp@fosstodon.org'
+  });
+  console.log(`User: ${user.note}`);
 };
 
 try {
-  await getBio(accountId);
+  getBio(connection);
 } catch (error) {
   console.error(error);
 }

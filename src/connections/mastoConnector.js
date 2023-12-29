@@ -1,4 +1,4 @@
-import { createRestAPIClient, createStreamingAPIClient } from "masto";
+import { createOAuthAPIClient, createRestAPIClient, createStreamingAPIClient } from "masto";
 
 export default class MastoConnections {
   constructor(url, stream, token) {
@@ -21,5 +21,13 @@ export default class MastoConnections {
       streamingApiUrl: this.stream,
       accessToken: this.token,
     })
+  }
+
+  oauthConnection() {
+    console.log("Making OAuth connection")
+    return createOAuthAPIClient({
+      url: this.url,
+      accessToken: this.token,
+    });
   }
 }

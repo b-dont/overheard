@@ -3,19 +3,22 @@ import MastoConnections from './connections/mastoConnector.js';
 import * as mentions from './interaction/mention.js';
 
 const subscribe = async() => {
-  const connection = new MastoConnections(process.env.URL, process.env.STREAM_URL, process.env.TOKEN)
-  const mastoConnection = connection.restConnection();
-  const mastoStream = connection.streamConnection();
+  const connector = new MastoConnections(process.env.URL, process.env.STREAM_URL, process.env.TOKEN)
+  const connection = connector.restConnection();
+  const stream = connector.streamConnection();
   console.log("Listening for mentions..");
 
-  for await (const event of mastoStream.user.notification.subscribe()) {
+  for await (const event of stream.user.notification.subscribe()) {
     switch (event.event) {
 
       case "notification": {
         if (event.payload.status.inReplyToId !== 'undefined') {
           console.log("Found mention", event.payload.status.id);
+          var parent = toString(event.payload.status.inReplyToAccountId);
+          var parentUser = getParentUser(parent);
+          console.log(`Parent user: ${parentUser.user}`);
           if (!mentions.checkNobot(event)) {
-            reblogParent(event.payload.status.inReplyToId, mastoConnection);
+            reblogParent(event.payload.status.inReplyToId, connection);
             break;
           }
         } else {
