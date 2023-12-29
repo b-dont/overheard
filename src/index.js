@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import MastoConnections from './connections/mastoConnector.js';
+import * as mentions from './interaction/mention.js';
 
 const subscribe = async() => {
   const connection = new MastoConnections(process.env.URL, process.env.STREAM_URL, process.env.TOKEN)
@@ -13,7 +14,7 @@ const subscribe = async() => {
       case "notification": {
         if (event.payload.status.inReplyToId !== 'undefined') {
           console.log("Found mention", event.payload.status.id);
-          if (!checkNobot(event)) {
+          if (!mentions.checkNobot(event)) {
             reblogParent(event.payload.status.inReplyToId, mastoConnection);
             break;
           }
