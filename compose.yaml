@@ -9,6 +9,3 @@ services:
       TOKEN: ${TOKEN}
     ports:
       - 3001:3001
-    volumes:
-      - ${PWD}/package.json
-      - ${PWD}/package-lock.json
